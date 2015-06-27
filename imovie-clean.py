@@ -134,9 +134,9 @@ def getSrcDirList(directory):
                 # Append this file to the list
                 _temp = {}
                 _temp['filename'] = _filename
-                _temp['fqpath'] = os.path.join(root, _filename)
+                _temp['abspath'] = os.path.join(root, _filename)
 
-                _temp['size'] = os.path.getsize(os.path.join(root, _filename))
+                _temp['size'] = os.path.getsize(_temp['abspath'])
 
                 _filelist.append(_temp)
 
@@ -176,13 +176,13 @@ def parseIMovieDirectory(directory, _rawFileList):
                     for _rawFile in _rawFileList:
                         # Check the filename, and size to match
                         if _rawFile['filename'].lower() == _filename.lower() and _rawFile['size'] == _filesize:
-                            print "    Found link to: " + _rawFile['fqpath']
+                            print "    Found link to: " + _rawFile['abspath']
 
                             # Delete the iMovie file
                             os.remove(os.path.join(root, _filename))
 
                             # Symlink the rawfile in
-                            os.symlink(_rawFile['fqpath'], os.path.join(root, _filename))
+                            os.symlink(_rawFile['abspath'], os.path.join(root, _filename))
 
                             break
                     else:
