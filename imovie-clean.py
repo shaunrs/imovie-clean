@@ -17,8 +17,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#
-
 import os
 import sys
 import time
@@ -30,6 +28,8 @@ except ImportError:
     import subprocess
     import re
 
+
+# Try to use scandir() as it is much faster, fallback to os.walk if not
 try:
     from os import scandir, walk
 except ImportError:
@@ -79,15 +79,10 @@ def main():
     srcFileList = srcMoviesList + srcMusicList
 
 
-    #for _f in srcFileList:
-    #    print _f
-
-
-    #sys.exit()
     # Parse the iMovie directory
     print "\nProcessing iMovie Library.."
     #parseIMovieDirectory(iMovieLibrary, srcFileList)
-    parseIMovieDirectory(iMovieLibrary, srcMoviesList)
+    parseIMovieDirectory(iMovieLibrary, srcFileList)
 
     _end_time = time.time()
 
@@ -131,15 +126,12 @@ def getSrcDirList(directory):
         # If the directory is our iMovie Library, skip it - we don't want circular links
         # This also catches iMovie Theater
         if "iMovie " in root:
-            #print "SRC Scan - Skipping " + root
             continue
 
         for _filename in files:
             if _filename.lower().endswith(filetypes):
 
                 # Append this file to the list
-                _index = _filename
-
                 _temp = {}
                 _temp['filename'] = _filename
                 _temp['fqpath'] = os.path.join(root, _filename)
@@ -147,9 +139,6 @@ def getSrcDirList(directory):
                 _temp['size'] = os.path.getsize(os.path.join(root, _filename))
 
                 _filelist.append(_temp)
-
-    #for _entry in _filelist:
-    #    print str(_entry)
 
     return _filelist
 
@@ -190,10 +179,10 @@ def parseIMovieDirectory(directory, _rawFileList):
                             print "    Found link to: " + _rawFile['fqpath']
 
                             # Delete the iMovie file
-                            #os.remove(os.path.join(root, _filename))
+                            os.remove(os.path.join(root, _filename))
 
                             # Symlink the rawfile in
-                            #os.symlink(_rawFile['fqpath'], os.path.join(root, _filename))
+                            os.symlink(_rawFile['fqpath'], os.path.join(root, _filename))
 
                             break
                     else:
